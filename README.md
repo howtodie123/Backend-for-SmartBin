@@ -7,7 +7,7 @@ The Backend for SmartBin is a RESTful API service that powers the SmartBin web m
 - Spring Data JPA
 - PostgreSQL 
 - Lombok
-
+- Swagger
 
 ## 📌 Features
 - Collect data from SmartBin 
@@ -15,5 +15,8 @@ The Backend for SmartBin is a RESTful API service that powers the SmartBin web m
 - Handle Threshold warning and send noticefication with gmail
 
 ## 📊 Monitoring
-* prometheus and grafana
+* Prometheus and Grafana
+
+## Frontend 
+* Check this repo [https://github.com/howtodie123/Web-Management-SmartBin](https://github.com/howtodie123/Web-Management-SmartBin)
 
