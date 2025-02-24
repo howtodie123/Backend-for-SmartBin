@@ -129,8 +129,8 @@ jobs:
           SPRING_MAIL_PORT=587
           SPRING_MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
           SPRING_MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
-          VERSION=1.0.0
-          SERVICE_NAME=developer
+          VERSION=0.0.1-SNAPSHOT
+          SERVICE_NAME=demo1
           EOF
 
       - name: Set up Docker Compose
