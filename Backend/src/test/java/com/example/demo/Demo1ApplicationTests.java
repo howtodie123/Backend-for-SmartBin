@@ -8,6 +8,8 @@ class Demo1ApplicationTests {
 
 	@Test
 	void contextLoads() {
+        System.out.println("Hello, World!");
 	}
+
 
 }
