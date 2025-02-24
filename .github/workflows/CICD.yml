@@ -31,8 +31,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      - name: Run Unit Tests
+      - name: excute permission
         run: chmod +x mvnw
+
+      - name: Run Unit Tests
         run: ./mvnw test
 
   integration-tests:
@@ -63,8 +65,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      - name: Resolve dependencies
+      - name: excute permission
         run: chmod +x mvnw
+
+      - name: Resolve dependencies
         run: ./mvnw dependency:resolve-plugins dependency:resolve
 
       - name: Run integration tests
