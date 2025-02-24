@@ -135,7 +135,7 @@ jobs:
 
       - name: Set up Docker Compose
         run: |
-          docker compose up
+          docker compose up -d
 
       - name: Install Trivy
         run: |
