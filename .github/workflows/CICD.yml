@@ -73,9 +73,15 @@ jobs:
 
       - name: Run integration tests
         run: ./mvnw verify -DskipUnitTests
+
   SonarQube-Scan:
     name: SonarQube Scan
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: Backend
+
     steps:
       - uses: actions/checkout@v4
         with:
