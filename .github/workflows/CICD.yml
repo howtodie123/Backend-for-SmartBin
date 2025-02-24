@@ -160,4 +160,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-scan-results
-          path: trivy_scan_results.txt
+          path: Backend/trivy_scan_results.txt
