@@ -191,7 +191,8 @@ jobs:
           output: ${{env.TRIVY_REPORT_NAME}}.md
          # output: 'trivy-results.sarif'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload Trivy scan results 
+   #     uses: github/codeql-action/upload-sarif@v3
+        uses: actions/upload-artifact@v4
         with:
           path: ${{env.TRIVY_REPORT_NAME}}.md
