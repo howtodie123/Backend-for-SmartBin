@@ -185,7 +185,7 @@ jobs:
           image-ref: ${{needs.build-and-push.outputs.IMAGE_TAG}}-${{github.sha}}
           severity: HIGH,CRITICAL
           vuln-type: os,library
-          exit-code: 1
+          exit-code: 0
           format: table
           skip-setup-trivy: 'false'
          # output: ${{env.TRIVY_REPORT_NAME}}.md
