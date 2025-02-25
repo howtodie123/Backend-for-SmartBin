@@ -114,7 +114,7 @@ jobs:
       IMAGE_VERSION: ${{ steps.meta.outputs.version }}
       IMAGE_TAG: ${{ steps.meta.outputs.tags }}
     runs-on: ubuntu-22.04
-    needs: [integration-tests, SonarQube-Scan]
+    needs: [Unit-tests,integration-tests, SonarQube-Scan]
     defaults:
       run:
         working-directory: Backend
@@ -140,12 +140,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/backend  
+          images: ghcr.io/${{ github.repository }}/Backend  
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: backend  
+          context: Backend  
           push: true
           tags: ${{ steps.meta.outputs.tags }}-${{ github.sha }}  
           cache-from: type=gha
@@ -183,7 +183,7 @@ jobs:
           skip-setup-trivy: 'false'
          # output: ${{env.TRIVY_REPORT_NAME}}.md
           output: 'trivy-results.sarif'
-          
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
