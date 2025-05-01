@@ -1,0 +1,200 @@
+name: CI/CD workflow for Maven Build and Sonar Code scan
+on:
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+  # pull_request:
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      - name: excute permission
+        run: chmod +x mvnw
+
+      - name: Run Unit Tests
+        run: ./mvnw test
+
+  integration-tests:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: unit-tests  
+    defaults:
+      run:
+        shell: bash
+        working-directory: Backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      - name: excute permission
+        run: chmod +x mvnw
+
+      - name: Resolve dependencies
+        run: ./mvnw dependency:resolve-plugins dependency:resolve
+
+      - name: Run integration tests
+        run: ./mvnw verify -DskipUnitTests
+
+  SonarQube-Scan:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+    environment: env
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu' 
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=smartbin -Dsonar.projectName='smartbin'
+  
+  Build-and-Push:
+    name: Build and Push Docker Image
+    outputs:
+      IMAGE_VERSION: ${{ steps.meta.outputs.version }}
+      IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-22.04
+    needs: [Unit-tests,integration-tests, SonarQube-Scan]
+    defaults:
+      run:
+        working-directory: Backend
+    environment: env
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3 
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/Backend  
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: Backend  
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-${{ github.sha }}  
+          cache-from: type=gha
+          cache-to: type=gha,mode=max,compression=gzip,compression-level=0
+          build-args: |
+            VERSION=0.0.1-SNAPSHOT
+            SERVICE_NAME=demo1
+
+    ####
+  Trivy-Scan:
+    name: Scan Docker image with Trivy
+    runs-on: ubuntu-latest
+    needs: Build-and-Push
+    environment: env
+    defaults:
+      run:
+        working-directory: Backend
+    env:
+      TRIVY_REPORT_NAME: $Backend-${{github.sha}}-report
+    steps:
+      - name: login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT }}
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.2
+        with:
+          version: v0.57.1
+          cache: true
+      
+      - name: Trivy scan
+        id: trivy-scan
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: ${{needs.build-and-push.outputs.IMAGE_TAG}}-${{github.sha}}
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          exit-code: 0
+          format: table
+          skip-setup-trivy: 'false'
+          output: ${{env.TRIVY_REPORT_NAME}}.md
+         # output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results 
+   #     uses: github/codeql-action/upload-sarif@v3
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.TRIVY_REPORT_NAME}}
+          if-no-files-found: warn
+          path: ${{env.TRIVY_REPORT_NAME}}.md

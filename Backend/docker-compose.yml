@@ -1,0 +1,113 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_network
+
+#  postgres-exporter:
+#    image: prometheuscommunity/postgres-exporter
+#    container_name: postgres_exporter
+#    restart: unless-stopped
+#    environment:
+#      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable"
+#    ports:
+#      - "9187:9187"
+#    depends_on:
+#      - db
+#      - prometheus
+#    networks:
+#      - app_network
+  app:
+    build:
+      context: .
+      args:
+          VERSION: ${VERSION}
+          SERVICE_NAME: ${SERVICE_NAME}
+    image: my_spring_boot_app
+    container_name: spring_app
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL:
+
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+      SPRINGDOC_SWAGGER_UI_ENABLED: true
+      SPRINGDOC_API_DOCS_ENABLED: true
+      APP_JWTSECRET: ${APP_JWTSECRET}
+      APP_JWTEXPIRATIONMS: ${APP_JWTEXPIRATIONMS}
+    networks:
+      - app_network
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+#  prometheus:
+#    image: prom/prometheus:latest
+#    container_name: prometheus
+#    restart: unless-stopped
+#    volumes:
+#      - ./Monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prom_data:/prometheus
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--storage.tsdb.path=/prometheus'
+#      - '--web.console.libraries=/etc/prometheus/console_libraries'
+#      - '--web.console.templates=/etc/prometheus/consoles'
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - app_network
+
+
+#  grafana:
+#    image: grafana/grafana:latest
+#    container_name: grafana
+#    restart: unless-stopped
+#    ports:
+#      - "3000:3000"
+#    volumes:
+#      - grafana_data:/var/lib/grafana
+#      - ./Monitoring/grafana/provisioning:/etc/grafana/provisioning # sao chép thư mục local sang docker
+#     # - ./Monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards chứa dashboard tự config
+#     #- ./Monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources chứa datasource
+#     # ./Monitoring/grafana/provisioning/datasources/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+#    networks:
+#      - app_network
+
+volumes:
+  postgres_data:
+#  prom_data:
+#  grafana_data:
+
+networks:
+  app_network:
+    driver: bridge
