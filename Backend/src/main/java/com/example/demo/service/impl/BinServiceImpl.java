@@ -2,8 +2,16 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.BinRequest;
 import com.example.demo.entity.bin;
+<<<<<<< HEAD
 import com.example.demo.repository.BinRepository;
 import com.example.demo.service.BinService;
+=======
+import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.BinRepository;
+import com.example.demo.service.AccountService;
+import com.example.demo.service.BinService;
+import org.springframework.beans.factory.annotation.Autowired;
+>>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
 import org.springframework.stereotype.Service;
 
 import java.util.*;

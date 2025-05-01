@@ -6,7 +6,10 @@ import com.example.demo.dto.ThresholdUpdateRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
+=======
+>>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +34,19 @@ public class ThresholdController {
         return threshold.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+=======
+>>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
     @PostMapping
     public threshold createThreshold(@RequestBody threshold newThreshold) {
         return thresholdService.createThreshold(newThreshold);
     }
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+=======
+>>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
     @PutMapping("/{id}")
     public ResponseEntity<threshold> updateThreshold(@PathVariable Integer id, @RequestBody ThresholdUpdateRequest updatedThreshold) {
         try {
@@ -48,7 +57,10 @@ public class ThresholdController {
         }
     }
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+=======
+>>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteThreshold(@PathVariable Integer id) {
         try {
