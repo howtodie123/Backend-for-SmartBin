@@ -56,10 +56,6 @@ public class BinController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
     // DELETE (Delete bin by ID)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBin(@PathVariable Integer id) {

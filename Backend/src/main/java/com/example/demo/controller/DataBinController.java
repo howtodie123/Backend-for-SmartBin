@@ -12,11 +12,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/databins")
-<<<<<<< HEAD
 @CrossOrigin(origins = "http://localhost:63342/")
-=======
-@CrossOrigin(origins = "http://localhost:63342")
->>>>>>> ca8492138dd65490aacc75e7e394a40feee64289
+
 public class DataBinController {
 
 
