@@ -52,13 +52,13 @@ public class databin {
 
     @Min(value = 0, message = "CPU must be greater than or equal to 0")
     @Max(value = 100, message = "CPU must be less than or equal to 100")
-    @Column(name = "cpu",nullable = false)
-    private Integer cpu;
+    @Column(name = "ram",nullable = false)
+    private Integer ram;
 
     @Min(value = 0, message = "battery must be greater than or equal to 0")
     @Max(value = 100, message = "battery must be less than or equal to 100")
-    @Column(name = "battery",nullable = false)
-    private Integer battery;
+    @Column(name = "temperature",nullable = false)
+    private Integer temperature;
 
     @Column(name = "lastupdate",nullable = false)
     private String lastupdate;

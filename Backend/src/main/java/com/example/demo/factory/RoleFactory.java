@@ -20,11 +20,11 @@ public class RoleFactory {
             case "user" -> {
                 return roleRepository.findByName(ERole.ROLE_USER);
             }
-            case "super_admin" -> {
-                return roleRepository.findByName(ERole.ROLE_SUPER_ADMIN);
-            }
             case "bin" -> {
                 return roleRepository.findByName(ERole.ROLE_BIN);
+            }
+            case "super_admin" -> {
+                return roleRepository.findByName(ERole.ROLE_SUPER_ADMIN);
             }
             default -> throw  new RoleNotFoundException("No role found for " +  role);
         }

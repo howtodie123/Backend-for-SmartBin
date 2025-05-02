@@ -43,7 +43,8 @@ public class BinController {
         // Chuyển DTO thành entity
         bin newBin = new bin();
         newBin.setName(binRequest.getName());
-        newBin.setLocation(binRequest.getLocation());
+        newBin.setLocationX(binRequest.getLocationX());
+        newBin.setLocationY(binRequest.getLocationY());
         bin savedBin = binService.createBin(newBin);
         return ResponseEntity.ok(savedBin);
     }
@@ -55,6 +56,7 @@ public class BinController {
         return optionalUpdatedBin.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
     // DELETE (Delete bin by ID)
     @DeleteMapping("/{id}")

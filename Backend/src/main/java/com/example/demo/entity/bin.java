@@ -21,6 +21,9 @@ public class bin {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "location", nullable = false)
-    private String location;
+    @Column(name = "locationX", nullable = false)
+    private String locationX;
+
+    @Column(name = "locationY", nullable = false)
+    private String locationY;
 }

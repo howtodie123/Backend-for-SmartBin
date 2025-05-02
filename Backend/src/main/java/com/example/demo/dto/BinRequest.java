@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class BinRequest {
+    private Integer id;
     private String name;
-    private String location;
+    private String locationX;
+    private String locationY;
 }

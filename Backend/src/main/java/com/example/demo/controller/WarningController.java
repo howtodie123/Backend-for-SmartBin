@@ -4,6 +4,7 @@ import com.example.demo.entity.warning;
 import com.example.demo.service.WarningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class WarningController {
     }
 
     // Xóa cảnh báo theo id
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteWarningById(@PathVariable Integer id) {
         String result = warningService.deleteWarningById(id);

@@ -13,5 +13,5 @@ public class ThresholdUpdateRequest {
     private Integer storage2;
     private Integer storage3;
     private Integer storage4;
-    private Integer battery;
+    private Integer temperature;
 }

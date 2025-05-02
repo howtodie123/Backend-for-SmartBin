@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,8 +60,8 @@ public class DataBinServiceImpl implements DataBinService {
         dataBin.setStorage2(dataBinRequest.getStorage2());
         dataBin.setStorage3(dataBinRequest.getStorage3());
         dataBin.setStorage4(dataBinRequest.getStorage4());
-        dataBin.setCpu(dataBinRequest.getCpu());
-        dataBin.setBattery(dataBinRequest.getBattery());
+        dataBin.setRam(dataBinRequest.getRam());
+        dataBin.setTemperature(dataBinRequest.getTemperature());
         dataBin.setLastupdate(dataBinRequest.getLastupdate());
 
         // Tìm threshold dựa trên idbin
@@ -97,8 +98,8 @@ public class DataBinServiceImpl implements DataBinService {
         }
 
         // Kiểm tra cảnh báo về Battery
-        if (dataBin.getBattery() < thresholds.getBattery()) {
-            warnings += "Warning: Battery is running low, currently at " + dataBin.getBattery() + "%.\n";
+        if (dataBin.getTemperature() > thresholds.getTemperature()) {
+            warnings += "Warning: Temperature is overheating, currently at " + dataBin.getTemperature() + "°C.\n";
         }
 
 
@@ -133,6 +134,7 @@ public class DataBinServiceImpl implements DataBinService {
         mailSender.send(message);
     }
 
+    @PreAuthorize("permitAll()")
     private void saveWarning(String name, String message , String time , Integer idbin ) {
         warning WarningData = new warning();
         WarningData.setIdbin(idbin);
@@ -159,5 +161,11 @@ public class DataBinServiceImpl implements DataBinService {
     public databin getLatestData() {
 
         return dataBinRepository.findLatestData();
+    }
+
+    //
+    @Override
+    public databin getLatestDataByIdBin(Long idbin) {
+        return dataBinRepository.findLatestDataByIdBin(idbin);
     }
 }

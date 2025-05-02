@@ -2,7 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.DataBinRequest;
 import com.example.demo.entity.databin;
+import com.example.demo.entity.warning;
 import com.example.demo.service.DataBinService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import com.example.demo.service.EmailService;
@@ -13,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/databins")
 @CrossOrigin(origins = "http://localhost:63342/")
-
 public class DataBinController {
 
 
@@ -32,6 +34,7 @@ public class DataBinController {
 
     // API thêm giá trị mới
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')or hasRole('ROLE_BIN')")
     public databin addDatabin(@RequestBody DataBinRequest dataBinRequest) {
         return dataBinService.addDataBin(dataBinRequest);
     }
@@ -40,6 +43,16 @@ public class DataBinController {
     @GetMapping("/latest")
     public databin getLatestData() {
         return dataBinService.getLatestData();
+    }
+
+    @GetMapping("/{idbin}")
+    public ResponseEntity<databin> getLatestDataByIdBin(@PathVariable("idbin") Long idbin) {
+        databin latestData = dataBinService.getLatestDataByIdBin(idbin);
+        if (latestData != null) {
+            return ResponseEntity.ok(latestData);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Thêm giá trị mới và kiểm tra cảnh báo mail

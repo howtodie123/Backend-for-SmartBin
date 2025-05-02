@@ -32,13 +32,13 @@ public class DataBinRequest {
     @Max(value = 100, message = "Storage4 must be less than or equal to 100")
     private Integer storage4;
 
-    @Min(value = 0, message = "CPU must be greater than or equal to 0")
-    @Max(value = 100, message = "CPU must be less than or equal to 100")
-    private Integer cpu;
+    @Min(value = 0, message = "RAM must be greater than or equal to 0")
+    @Max(value = 100, message = "RAM must be less than or equal to 100")
+    private Integer ram;
 
-    @Min(value = 0, message = "battery must be greater than or equal to 0")
-    @Max(value = 100, message = "battery must be less than or equal to 100")
-    private Integer battery;
+    @Min(value = 0, message = "temperature must be greater than or equal to 0")
+    @Max(value = 100, message = "temperature must be less than or equal to 100")
+    private Integer temperature;
 
     private String lastupdate;
 }

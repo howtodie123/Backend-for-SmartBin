@@ -52,7 +52,7 @@ public class ThresholdServiceImpl implements ThresholdService {
             thresholdToUpdate.setStorage2(updatedThreshold.getStorage2());
             thresholdToUpdate.setStorage3(updatedThreshold.getStorage3());
             thresholdToUpdate.setStorage4(updatedThreshold.getStorage4());
-            thresholdToUpdate.setBattery(updatedThreshold.getBattery());
+            thresholdToUpdate.setTemperature(updatedThreshold.getTemperature());
 
             // Lưu lại các thay đổi vào database
             return thresholdRepository.save(thresholdToUpdate);

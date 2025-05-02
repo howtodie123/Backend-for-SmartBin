@@ -6,9 +6,7 @@ import com.example.demo.dto.ThresholdUpdateRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,12 +32,10 @@ public class ThresholdController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-
     @PostMapping
     public threshold createThreshold(@RequestBody threshold newThreshold) {
         return thresholdService.createThreshold(newThreshold);
     }
-
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
@@ -52,9 +48,7 @@ public class ThresholdController {
         }
     }
 
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteThreshold(@PathVariable Integer id) {
         try {

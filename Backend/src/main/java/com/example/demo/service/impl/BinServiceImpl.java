@@ -2,16 +2,8 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.BinRequest;
 import com.example.demo.entity.bin;
-
 import com.example.demo.repository.BinRepository;
 import com.example.demo.service.BinService;
-
-import com.example.demo.repository.AccountRepository;
-import com.example.demo.repository.BinRepository;
-import com.example.demo.service.AccountService;
-import com.example.demo.service.BinService;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -46,7 +38,8 @@ public class BinServiceImpl implements BinService {
         if (optionalBin.isPresent()) {
             bin existingBin = optionalBin.get();
             existingBin.setName(binRequest.getName());
-            existingBin.setLocation(binRequest.getLocation());
+            existingBin.setLocationX(binRequest.getLocationX());
+            existingBin.setLocationY(binRequest.getLocationY());
             return Optional.of(binRepository.save(existingBin));
         }
         return Optional.empty();

@@ -10,4 +10,5 @@ public interface DataBinService {
     List<databin> getAllData();
     databin addDataBin(DataBinRequest dataBinRequest);
     databin getLatestData();
+    databin getLatestDataByIdBin(Long idbin);
 }
