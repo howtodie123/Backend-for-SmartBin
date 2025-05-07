@@ -63,7 +63,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:63342")); // ✅ origin bạn muốn cho phép
+        configuration.setAllowedOrigins(List.of("http://35.213.129.74:30566/")); // ✅ origin bạn muốn cho phép
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

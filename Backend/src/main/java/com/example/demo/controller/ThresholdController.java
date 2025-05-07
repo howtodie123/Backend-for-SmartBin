@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/thresholds")
-@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "http://35.213.129.74:30566/")
 public class ThresholdController {
 
     @Autowired

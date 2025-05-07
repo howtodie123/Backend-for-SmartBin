@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bins")
-@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "http://35.213.129.74:30566/")
 public class BinController {
 
     private final BinService binService;

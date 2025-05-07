@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/warnings")
-@CrossOrigin(origins = "http://localhost:63342")
+@CrossOrigin(origins = "http://35.213.129.74:30566/")
 public class WarningController {
 
     @Autowired
