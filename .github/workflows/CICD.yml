@@ -206,36 +206,84 @@ jobs:
           if-no-files-found: warn
           path: ${{env.TRIVY_REPORT_NAME}}.md
 
-  Update-Image-Tag:
-    name: Update image tag in deployment.yaml
-    needs: Build-and-Push
+  # Update-Image-Tag:
+  #   name: Update image tag in deployment.yaml
+  #   needs: Build-and-Push
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: .github\workflows\Deployment\kubenetes
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Update deployment.yaml image tag
+  #       run: |
+  #         TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
+  #         echo "New image tag: $TAG"
+  #         sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" deployment.yaml
+
+  #     - name: Configure Git
+  #       run: |
+  #         git config user.name "GitHub Actions"
+  #         git config user.email "actions@github.com"
+
+  #     - name: Check changes
+  #       run: |
+  #         git diff
+
+  #     - name: Commit and push changes
+  #       run: |
+  #         git add deployment.yaml
+  #         git commit -m "chore: update image tag to $TAG"
+  #         git push
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-deployment:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .github\workflows\Deployment\kubenetes
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure full commit history is fetched
 
-      - name: Update deployment.yaml image tag
-        run: |
-          TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
-          echo "New image tag: $TAG"
-          sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" deployment.yaml
-
-      - name: Configure Git
+      - name: Set up Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Verify directory and files
+        run: |
+          ls -la .github/workflows/Deployment/kubernetes/
+        shell: bash
+
+      - name: Get Commit SHA
+        id: get_commit
+        run: |
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          echo "New tag will be: ghcr.io/howtodie123/backend:main-$COMMIT_SHA"
+        shell: bash
+
+      - name: Update Deployment YAML
+        run: |
+          TAG="ghcr.io/howtodie123/backend:main-${{ env.COMMIT_SHA }}"
+          echo "Updating image tag to: $TAG"
+          sed -i -E "s|(image:\s+ghcr.io/howtodie123/backend:).*|\1$TAG|" .github/workflows/Deployment/kubernetes/deployment.yml
+        shell: bash
+
       - name: Check changes
         run: |
           git diff
+        shell: bash
 
       - name: Commit and push changes
         run: |
-          git add deployment.yaml
-          git commit -m "chore: update image tag to $TAG"
+          git add .github/workflows/Deployment/kubernetes/deployment.yml
+          git commit -m "Update image tag to main-${{ env.COMMIT_SHA }}" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
