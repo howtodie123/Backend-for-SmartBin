@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: springboot-container
-          image: ghcr.io/howtodie123/backend:main-a3a17ff3786afb95ed41d068da6fa1c7ae4268ba
+          image: ghcr.io/howtodie123/backend:main-50b523d16e74a10b022706442ab774cfcf0d0ac6
           imagePullPolicy: Always
           env:
             - name: SPRING_DATASOURCE_URL
