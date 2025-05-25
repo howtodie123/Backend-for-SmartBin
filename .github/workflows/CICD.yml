@@ -206,27 +206,27 @@ jobs:
           if-no-files-found: warn
           path: ${{env.TRIVY_REPORT_NAME}}.md
 
-Update-Image-Tag:
-  name: Update image tag in deployment.yaml
-  needs: Build-and-Push
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  Update-Image-Tag:
+    name: Update image tag in deployment.yaml
+    needs: Build-and-Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Update deployment.yaml image tag
-      run: |
-        TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
-        echo "New image tag: $TAG"
-        sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" .github/workflows/Deployment/deployment.yaml
+      - name: Update deployment.yaml image tag
+        run: |
+          TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
+          echo "New image tag: $TAG"
+          sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" .github/workflows/Deployment/deployment.yaml
 
-    - name: Configure Git
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-    - name: Commit and push changes
-      run: |
-        git add .github/workflows/Deployment/deployment.yaml
-        git commit -m "chore: update image tag to $TAG"
-        git push
+      - name: Commit and push changes
+        run: |
+          git add .github/workflows/Deployment/deployment.yaml
+          git commit -m "chore: update image tag to $TAG"
+          git push
