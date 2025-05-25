@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import com.example.demo.service.EmailService;
 
-
 import java.util.List;
 
 @RestController
