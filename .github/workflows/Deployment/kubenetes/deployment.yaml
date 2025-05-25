@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: springboot-app
-          image: ghcr.io/howtodie123/backend:main-cb2bdf59d486ae14bf46aabb43a7d87af82df946
+          image: ghcr.io/howtodie123/backend:main-650bfbfeb1b7b77f1e88fdb928e4c168663bffd8
           imagePullPolicy: Always
           ports:
             - containerPort: 8090
