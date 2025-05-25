@@ -256,7 +256,7 @@ jobs:
 
       - name: Verify directory and files
         run: |
-          ls -la .github/workflows/Deployment/kubernetes/
+          ls -la .github/workflows/Deployment/kubenetes/
         shell: bash
 
       - name: Get Commit SHA
@@ -271,7 +271,7 @@ jobs:
         run: |
           TAG="ghcr.io/howtodie123/backend:main-${{ env.COMMIT_SHA }}"
           echo "Updating image tag to: $TAG"
-          sed -i -E "s|(image:\s+ghcr.io/howtodie123/backend:).*|\1$TAG|" .github/workflows/Deployment/kubernetes/deployment.yml
+          sed -i -E "s|(image:\s+ghcr.io/howtodie123/backend:).*|\1$TAG|" .github/workflows/Deployment/kubenetes/deployment.yml
         shell: bash
 
       - name: Check changes
@@ -281,7 +281,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add .github/workflows/Deployment/kubernetes/deployment.yml
+          git add .github/workflows/Deployment/kubenetes/deployment.yml
           git commit -m "Update image tag to main-${{ env.COMMIT_SHA }}" || echo "No changes to commit"
           git push
         env:
