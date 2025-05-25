@@ -247,7 +247,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensure full commit history is fetched
+          fetch-depth: 0 
 
       - name: Set up Git
         run: |
