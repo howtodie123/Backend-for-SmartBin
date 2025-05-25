@@ -198,16 +198,16 @@ jobs:
           exit-code: 0
           format: table
           skip-setup-trivy: 'false'
-          output: Backend/trivy${{env.TRIVY_REPORT_NAME}}.md
+          output: ${{env.TRIVY_REPORT_NAME}}.md
          # output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results 
    #     uses: github/codeql-action/upload-sarif@v3
         uses: actions/upload-artifact@v4
         with:
-          name: Backend/trivy${{env.TRIVY_REPORT_NAME}}
+          name: ${{env.TRIVY_REPORT_NAME}}
           if-no-files-found: warn
-          path: Backend/trivy${{env.TRIVY_REPORT_NAME}}.md
+          path: ${{env.TRIVY_REPORT_NAME}}.md
 
   # Update-Image-Tag:
   #   name: Update image tag in deployment.yaml
