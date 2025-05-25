@@ -110,11 +110,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
- #       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Backend -Dsonar.projectName='Backend'
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-              -Dsonar.projectKey=Backend \
-              -Dsonar.projectName='Backend' \
-              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Backend -Dsonar.projectName='Backend'
+        # run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        #       -Dsonar.projectKey=Backend \
+        #       -Dsonar.projectName='Backend' \
+        #       -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
   Build-and-Push:
     name: Build and Push Docker Image 
     outputs:
