@@ -102,7 +102,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-          
+
       - name: Build and generate JaCoCo report
         run: mvn clean verify
 
@@ -110,15 +110,18 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Backend -Dsonar.projectName='Backend'
-
+ #       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Backend -Dsonar.projectName='Backend'
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              -Dsonar.projectKey=Backend \
+              -Dsonar.projectName='Backend' \
+              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
   Build-and-Push:
     name: Build and Push Docker Image 
     outputs:
       IMAGE_VERSION: ${{ steps.meta.outputs.version }}
       IMAGE_TAG: ${{ steps.meta.outputs.tags }}
     runs-on: ubuntu-22.04
-    needs: [Unit-tests,integration-tests] #, SonarQube-Scan]
+    needs: [Unit-tests,integration-tests, SonarQube-Scan]
     defaults:
       run:
         working-directory: Backend
@@ -202,3 +205,28 @@ jobs:
           name: ${{env.TRIVY_REPORT_NAME}}
           if-no-files-found: warn
           path: ${{env.TRIVY_REPORT_NAME}}.md
+
+Update-Image-Tag:
+  name: Update image tag in deployment.yaml
+  needs: Build-and-Push
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Update deployment.yaml image tag
+      run: |
+        TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
+        echo "New image tag: $TAG"
+        sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" .github/workflows/Deployment/deployment.yaml
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+    - name: Commit and push changes
+      run: |
+        git add .github/workflows/Deployment/deployment.yaml
+        git commit -m "chore: update image tag to $TAG"
+        git push
