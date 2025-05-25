@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/warnings")
 @CrossOrigin(origins = "http://35.213.129.74:30566/")
