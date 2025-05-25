@@ -242,7 +242,8 @@ jobs:
 
   update-deployment:
     runs-on: ubuntu-latest
-
+    needs: Build-and-Push
+    environment: env
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -251,8 +252,7 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
 
       - name: Verify directory and files
         run: |
@@ -269,7 +269,7 @@ jobs:
 
       - name: Update Deployment YAML
         run: |
-          TAG="ghcr.io/howtodie123/backend:main-${{ env.COMMIT_SHA }}"
+          TAG="${{needs.build-and-push.outputs.IMAGE_TAG}}-${{github.sha}}"
           echo "Updating image tag to: $TAG"
           sed -i -E "s|(image:\s+ghcr.io/howtodie123/backend:).*|\1$TAG|" .github/workflows/Deployment/kubenetes/deployment.yaml
         shell: bash
@@ -282,8 +282,10 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "Update image tag to main-${{ env.COMMIT_SHA }}" || echo "No changes to commit"
+          git commit -m "Update image tag to main-${{ env.COMMIT_SHA }} [skip ci]" || echo "No changes to commit"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
         shell: bash
+
+ 
