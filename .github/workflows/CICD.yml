@@ -206,30 +206,44 @@ jobs:
           if-no-files-found: warn
           path: ${{env.TRIVY_REPORT_NAME}}.md
 
-  Update-Image-Tag:
-    name: Update image tag in deployment.yaml
-    needs: Build-and-Push
+  name: Update Deployment Tag
+
+  update-deployment:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .github\workflows\Deployment
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Lấy toàn bộ lịch sử commit để đảm bảo có commit SHA
 
-      - name: Update deployment.yaml image tag
+      - name: Set up Git
         run: |
-          TAG="${{ needs.Build-and-Push.outputs.IMAGE_TAG }}-${{ github.sha }}"
-          echo "New image tag: $TAG"
-          sed -i -E "s|(image:\s+ghcr.io/.*/Backend:).*|\1$TAG|" deployment.yaml
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
-      - name: Configure Git
+      - name: Get Commit SHA
+        id: get_commit
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          echo "New tag will be: ghcr.io/howtodie123/backend:main-$COMMIT_SHA"
 
-      - name: Commit and push changes
+      - name: Update Deployment YAML
         run: |
-          git add deployment.yaml
-          git commit -m "chore: update image tag to $TAG"
+          TAG="ghcr.io/howtodie123/backend:main-${{ env.COMMIT_SHA }}"
+          echo "Updating image tag to: $TAG"
+          sed -i -E "s|(image:\s+ghcr.io/howtodie123/backend:).*|\1$TAG|" .github/workflows/Deployment/kubenetes/deployment.yml
+        shell: bash
+
+      - name: Check changes
+        run: |
+          git diff
+
+      - name: Commit and push changes 
+        run: |
+          git add .
+          git commit -m "Update image tag to main-${{ env.COMMIT_SHA }}"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
