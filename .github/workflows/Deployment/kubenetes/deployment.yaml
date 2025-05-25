@@ -1,14 +1,11 @@
 ---
-#deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-app
+  name: springboot-application-deploy
   namespace: default
-  labels:
-    app: springboot-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: springboot-app
@@ -18,44 +15,75 @@ spec:
         app: springboot-app
     spec:
       containers:
-        - name: springboot-container
-          image: ghcr.io/howtodie123/backend:main-50b523d16e74a10b022706442ab774cfcf0d0ac6
+        - name: springboot-app
+          image: ghcr.io/howtodie123/backend:main-cb2bdf59d486ae14bf46aabb43a7d87af82df946
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8090
           env:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: springboot-se
+                  name: springboot-secrets
                   key: spring.datasource.url
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: springboot-se
+                  name: springboot-secrets
                   key: spring.datasource.username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: springboot-se
+                  name: springboot-secrets
                   key: spring.datasource.password
             - name: SPRING_MAIL_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: springboot-se
+                  name: springboot-secrets
                   key: spring.mail.username
             - name: SPRING_MAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: springboot-se
+                  name: springboot-secrets
                   key: spring.mail.password
-          ports:
-            - containerPort: 8080
-          resources:  
-            requests:
-              cpu: "250m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+            - name: APP_JWTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-secrets
+                  key: app.jwtSecret
+            - name: APP_JWTEXPIRATIONMS
+              valueFrom:
+                secretKeyRef:
+                  name: springboot-secrets
+                  key: app.jwtExpirationMs
+
+          # livenessProbe:
+          #   httpGet:
+          #     path: /actuator/health
+          #     port: 8090
+          #     initialDelaySeconds: 60
+          #     periodSeconds: 60
+          #     timeoutSeconds: 60
+          #     failureThreshold: 60
+          # readinessProbe:
+          #   httpGet:
+          #     path: /actuator/health
+          #     port: 8090
+          #     initialDelaySeconds: 60
+          #     periodSeconds: 60
+          #     timeoutSeconds: 60
+          #     failureThreshold: 60
+          # resources:
+          #   requests:
+          #     cpu: "250m"
+          #     memory: "256Mi"
+          #   limits:
+          #     cpu: "500m"
+          #     memory: "512Mi"
+      # volumes:
+      #   - name: config-volume
+      #     secret:
+      #       secretName: springboot-secrets
 
 ---
 # Service
@@ -69,6 +97,6 @@ spec:
     app: springboot-app
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 8080
-  type: LoadBalancer
+    port: 8090
+    targetPort: 8090
+  type: NodePort
