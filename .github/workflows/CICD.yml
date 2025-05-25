@@ -206,8 +206,6 @@ jobs:
           if-no-files-found: warn
           path: ${{env.TRIVY_REPORT_NAME}}.md
 
-  name: Update Deployment Tag
-
   update-deployment:
     runs-on: ubuntu-latest
 
